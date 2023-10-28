@@ -1,0 +1,6 @@
+data_file: "../data/simplehost_selectedhostsfamilies_FluPB2_flubefore2009.csv.gz"
+training_sequence_number: 100
+test_sequence_number: 50
+viral_families: ["Corona", "Flavi", "Picorna", "Orthomyxo"]
+viral_hosts: ["human", "swine", "avian"]
+seeds: [1, 2, 3]

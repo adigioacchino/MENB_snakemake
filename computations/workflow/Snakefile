@@ -1,0 +1,73 @@
+configfile: "config/config.yml"
+
+include: "rules/split_training_test.smk"
+include: "rules/fit_nucleotide_model.smk"
+include: "rules/infer_hosts.smk"
+include: "rules/run_VIDHOP.smk"
+
+
+rule prepare_train_test_sets:
+    message:
+        "Preparing all training and test sets sets."
+    input:
+        expand("resources/training_sets/{family}_{host}_training_{seed}.txt", 
+                family=config["viral_families"], host=config["viral_hosts"], 
+                seed=config["seeds"]),
+        expand("resources/training_sets/all_{host}_training_{seed}.txt", 
+                host=config["viral_hosts"], 
+                seed=config["seeds"]),
+        expand("resources/training_sets/{family}_{host}_training_fewseqs_{seed}.txt", 
+                family=config["viral_families"], host=config["viral_hosts"], 
+                seed=config["seeds"]),
+        expand("resources/training_sets/all_{host}_training_{seed}.txt", 
+                host=config["viral_hosts"], 
+                seed=config["seeds"])
+
+
+rule fit_all_nucleotide_models:
+    message:
+        "Fitting all nucleotide models."
+    input:
+        expand("results/models/{family}_{host}_NucleotideModel_{mode}_{seed}.txt", 
+                family=config["viral_families"], host=config["viral_hosts"], 
+                seed=config["seeds"], 
+                mode=["full", "half"]
+                ),
+        expand("results/models/all_{host}_NucleotideModel_{mode}_{seed}.txt", 
+                host=config["viral_hosts"], 
+                seed=config["seeds"], 
+                mode=["full", "half"]
+                ) 
+
+rule infer_all_hosts:
+    message:
+        "Inferring hosts of all sequences with each nucleotide model."
+    input:
+        expand("results/inferred_hosts/{seq_mode}_{host_mode}_{seed}.txt",
+                seq_mode=["full", "half"], 
+                host_mode=["hostonly", "virushost", "givenvirus"],
+                seed=config["seeds"])
+
+rule train_VIDHOP_all:
+    message:
+        "Running VIDHOP for each viral family (and each sequence mode, and each seed)."
+    input:
+        expand("results/VIDHOP/results/{family}_{seq_mode}_{seed}.txt",
+                seq_mode=["full", "half"], 
+                family=config["viral_families"],
+                seed=config["seeds"])
+
+rule clean_VIDHOP_trainmodel: # rule to clean model and trainining data of VIDHOP that are not needed anymore
+    message:
+        "Cleaning VIDHOP training data and model."
+    input:
+        expand("results/VIDHOP/results/{family}_{seq_mode}_{seed}.txt",
+                seq_mode=["full", "half"], 
+                family=config["viral_families"],
+                seed=config["seeds"]),
+    output:
+        touch("results/VIDHOP/file_cleaned.done")
+    shell:
+        """
+        rm -r results/VIDHOP/models -r results/VIDHOP/*training*
+        """
