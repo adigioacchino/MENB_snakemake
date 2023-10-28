@@ -5,7 +5,7 @@ It is organized as a [Snakemake](https://snakemake.github.io/) workflow, with [P
 This repository contains a legacy copy of [this repository](https://github.com/adigioacchino/MaxEntNucleotideBiases.jl) that contains a Julia package introduced with the paper and is needed to reproduce its results.
 
 ## Preliminaries
-First of all, you need to retrieve the data from [Zenodo](https://doi.org/10.5281/zenodo.10050077), uncompress it, and place it in a directory called `data` (from the root of the repository, `data/simplehost_selectedhostsfamilies_FluPB2_flubefore2009.csv.gz` must be a valid file).
+First of all, you need to retrieve [this dataset](https://doi.org/10.5281/zenodo.10050077) from Zenodo, uncompress it, and place it in a directory called `data` (from the root of the repository, `data/simplehost_selectedhostsfamilies_FluPB2_flubefore2009.csv.gz` must be a valid file).
     
 Then, you need to install [Julia](https://julialang.org/) and [Snakemake](https://snakemake.github.io/), following the instructions on their respective websites.
 
